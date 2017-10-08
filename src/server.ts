@@ -126,6 +126,9 @@ app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userControl
 app.get("/restaurant/list", passportConfig.isAuthenticated, restaurantController.getList);
 app.get("/restaurant/detail/:id", passportConfig.isAuthenticated, restaurantController.getDetail);
 app.post("/restaurant/detail/:id", passportConfig.isAuthenticated, restaurantController.postDetail);
+app.put("/restaurant/detail/:id", passportConfig.isAuthenticated, restaurantController.postUpdateDetail);
+app.get("/restaurant/create", passportConfig.isAuthenticated, restaurantController.createDetail);
+
 
 /**
  * OAuth authentication routes. (Sign in)

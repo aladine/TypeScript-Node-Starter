@@ -10,16 +10,16 @@ const request = require("express-validator");
  * GET /restaurant/list
  * Get List page
  */
-export let getList = (req: Request, res: Response) => {
-    if (req.user) {
-        return res.redirect("/");
-    }
-
-    const restaurants = Restaurant.findOne();
-    //TODO: find all
-    res.render("restaurant/list", {
-        title: "List of restaurants",
-        restaurants: restaurants
+export let getList = (req: Request, res: Response, next: NextFunction) => {
+    // const restaurants = Restaurant.find({}).limit(5);
+    // const restaurants = Restaurant.findOne();
+    Restaurant.find({}, (err, result) => {
+        if (err) { return next(err); }
+        console.log(result);
+        res.render("restaurant/list", {
+            title: "List of restaurants",
+            restaurants: result
+        });
     });
 };
 
@@ -28,48 +28,66 @@ export let getList = (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-export let getDetail = (req: Request, res: Response) => {
-    if (req.user) {
-        return res.redirect("/");
-    }
-    const record = Restaurant.findById(req.params.id);
+export let getDetail = (req: Request, res: Response, next: NextFunction) => {
+    Restaurant.findById(req.params.id, (err, record) => {
+        if (err) {
+            req.flash("errors", err);
+            return res.redirect("/restaurant/create");
+        }
+        if (record) {
+            return res.render("restaurant/detail", {
+                title: "Detail page",
+                record: record
+            });
+        }
+        res.redirect("/restaurant/create");
+    });
+};
+
+/**
+ * GET /restaurant/create
+ * @param req
+ * @param res
+ */
+export let createDetail = (req: Request, res: Response) => {
+    const record = new Restaurant({});
     res.render("restaurant/detail", {
-        title: "Detail page",
+        title: "Create page",
         record: record
     });
 };
 
 export let postDetail = (req: Request, res: Response, next: NextFunction) => {
-    req.assert("name", "Name is smaller than 40 chars").len({ min: 4 });
+    req.assert("name", "Name is mininum than 1 chars").len({ min: 1 });
 
     const errors = req.validationErrors();
 
     if (errors) {
         req.flash("errors", errors);
-        return res.redirect("/restaurant/detail");
+        return res.redirect("/restaurant/detail/" + req.params.id);
     }
 
-    // res.render("restaurant/detail", {
-    //    title: "List"
-    //  });
-
+    const resID = req.params.id;
     const restaurant = new Restaurant({
-        name: req.body.name
+        _id: resID,
+        name: req.body.name,
+        address: req.body.address,
+        geolocation: {
+            lat: req.params.lat,
+            lon: req.params.lon
+        },
+        openinghour: req.body.openinghour
     });
 
-    Restaurant.findOne({ name: req.body.name }, (err, existingRecord) => {
-        if (err) {
-            return next(err);
-        }
+    Restaurant.findById(resID, (err, existingRecord) => {
+        if (err) {return next(err); }
         if (existingRecord) {
-            req.flash("errors", { msg: "Name already exists" });
-            return res.redirect("/restaurant/detail");
+            req.flash("errors", { msg: "Restaurant already exists" });
+            return res.redirect("/restaurant/detail/" + resID);
         }
         restaurant.save((err) => {
-            if (err) {
-                return next(err);
-            }
-            res.redirect("/restaurant/detail");
+            if (err) {return next(err); }
+            return res.redirect("/restaurant/list");
         });
     });
 };
@@ -84,7 +102,7 @@ export let postUpdateDetail = (req: Request, res: Response, next: NextFunction) 
             if (err) {
                 if (err.code === 11000) {
                     req.flash("errors", { msg: "Something wrong" });
-                    return res.redirect("/restaurant/detail/"+restaurantId);
+                    return res.redirect("/restaurant/detail/" + restaurantId);
                 }
                 return next(err);
             }

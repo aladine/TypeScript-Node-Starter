@@ -1,7 +1,13 @@
 import * as mongoose from "mongoose";
 
 export type RestaurantModel = mongoose.Document & {
-    name: string
+    name: string,
+    address: string,
+    geolocation: {
+        lat: Number,
+        lon: Number
+    },
+    openinghour: string
 };
 
 const restaurantSchema = new mongoose.Schema({

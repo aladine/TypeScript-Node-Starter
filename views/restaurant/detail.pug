@@ -2,8 +2,32 @@ extends ../layout
 
 block content
   .page-header
-    h3 Restaurant profile
+    h3 Restaurant Detail
 
-    form.form-horizontal(action='restaurant/detail', method='POST')
+    form.form-horizontal(action='/restaurant/detail/'+record._id, method='POST')
       input(type='hidden', name='_csrf', value=_csrf)
       .form-group
+        label.col-sm-3.control-label(for='name') Name
+        .col-sm-7
+          input.form-control(type='text', name='name', id='name', value=record.name)
+      .form-group
+        label.col-sm-3.control-label(for='address') Address
+        .col-sm-7
+          input.form-control(type='text', name='address', id='address', value=record.address)
+      .form-group
+        label.col-sm-3.control-label(for='lat') Lat
+        .col-sm-7
+          input.form-control(type='number', name='lat', id='lat', value=record.lat)
+      .form-group
+        label.col-sm-3.control-label(for='lon') Long
+        .col-sm-7
+          input.form-control(type='number', name='lon', id='lon', value=record.lon)
+      .form-group
+        label.col-sm-3.control-label(for='openinghour') Opening hour
+        .col-sm-7
+          input.form-control(type='text', name='openinghour', id='openinghour', value=record.openinghour)
+      .form-group
+        .col-sm-offset-3.col-sm-7
+          button.col-sm-3.btn.btn-primary(type='submit')
+            i.fa.fa-rocket
+            | Submit

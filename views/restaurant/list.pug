@@ -3,3 +3,12 @@ extends ../layout
 block content
   .page-header
     h2 Restaurant list
+      hr
+      if restaurants.length
+        p There are no restaurant. 
+        a(href='/restaurant/create') Create one
+      else
+        ul
+          each record in restaurants
+            li record.name
+              //- a(href='/restaurant/detail' + record._id) 
