@@ -32,6 +32,7 @@ import * as homeController from "./controllers/home";
 import * as userController from "./controllers/user";
 import * as apiController from "./controllers/api";
 import * as contactController from "./controllers/contact";
+import * as restaurantController from "./controllers/restaurant";
 
 /**
  * API keys and Passport configuration.
@@ -122,11 +123,9 @@ app.post("/account/password", passportConfig.isAuthenticated, userController.pos
 app.post("/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
 
-/**
- * API examples routes.
- */
-app.get("/api", apiController.getApi);
-app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
+app.get("/restaurant/list", passportConfig.isAuthenticated, restaurantController.getList);
+app.get("/restaurant/detail/:id", passportConfig.isAuthenticated, restaurantController.getDetail);
+app.post("/restaurant/detail/:id", passportConfig.isAuthenticated, restaurantController.postDetail);
 
 /**
  * OAuth authentication routes. (Sign in)

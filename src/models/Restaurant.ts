@@ -5,8 +5,8 @@ export type RestaurantModel = mongoose.Document & {
 };
 
 const restaurantSchema = new mongoose.Schema({
-    name: String, 
-    address: String, 
+    name: String,
+    address: String,
     geolocation: {
         lat: Number,
         lon: Number
